@@ -72,3 +72,23 @@ class WeatherConditions(BaseModel):
     humidity = models.DecimalField(max_digits=10, decimal_places=2)
     wind_speed = models.DecimalField(max_digits=10, decimal_places=2)
     weather_description = models.CharField(max_length=150)
+
+class FireIncident(models.Model):
+    SEVERITY_CHOICES = [
+        ('Low', 'Low'),
+        ('Medium', 'Medium'),
+        ('High', 'High'),
+        ('Critical', 'Critical'),
+    ]
+
+    location = models.CharField(max_length=200)
+    date = models.DateTimeField()
+    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES)
+    description = models.TextField()
+
+    temperature = models.FloatField(help_text="Temperature in C")
+    humidity = models.FloatField(help_text="Humidity as %")
+    wind_speed = models.FloatField(help_text="Wind speed in km/h")
+
+    def __str__(self):
+        return f"Fire at {self.location} - {self.severity}"

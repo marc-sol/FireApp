@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Fire Incidents</h1>
+<a href="{% url 'fire_incident_create' %}">Create New Fire Incident</a>
+<ul>
+    {% for incident in incidents %}
+        <li>
+            {{ incident.location }} - {{ incident.severity }} on {{ incident.date }}<br>
+            Temperature: {{ incident.temperature }} °C, Humidity: {{ incident.humidity }}%, Wind Speed: {{ incident.wind_speed }} km/h
+            <a href="{% url 'fire_incident_update' incident.pk %}">Edit</a> | 
+            <a href="{% url 'fire_incident_delete' incident.pk %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

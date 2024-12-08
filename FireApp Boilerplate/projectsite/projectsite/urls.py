@@ -12,5 +12,9 @@ urlpatterns = [
     path('multilineChart/', MultilineIncidentTop3Country, name='chart'),
     path('multiBarChart/', multipleBarbySeverity, name='chart'),
     path('stations', views.map_station, name='map-station'),
+    path('', views.fire_incident_list, name='fire_incident_list'),
+    path('create/', views.fire_incident_create, name='fire_incident_create'),
+    path('update/<int:pk>/', views.fire_incident_update, name='fire_incident_update'),
+    path('delete/<int:pk>/', views.fire_incident_delete, name='fire_incident_delete'),
 
 ]

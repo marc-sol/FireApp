@@ -171,7 +171,7 @@
                       </a>
                     </li>
                     <li>
-                      <a href="maps/jqvmap.html">
+                      <a href="{% url 'fire_incident_list' %}">
                         <span class="sub-item">Fire Incidents</span>
                       </a>
                     </li>
@@ -259,6 +259,13 @@
     <script src="{% static 'js/plugin/jqvmap/maps/jquery.vmap.world.js' %}"></script>
     <script src="{% static 'js/plugin/sweetalert/sweetalert.min.js' %}"></script>
     <script src="{% static 'js/atlantis.min.js' %}"></script>
+    <script>
+      {% if messages %}
+          {% for message in messages %}
+              toastr.{{ message.tags }}("{{ message }}");
+          {% endfor %}
+      {% endif %}
+    </script>
 
     {% block chart %}
 

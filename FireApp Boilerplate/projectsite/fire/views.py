@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
-from fire.models import Locations, Incident, FireStation
+from fire.models import Locations, Incident, FireStation, FireIncident
+from .forms import FireIncidentForm
 from django.db import connection 
 from django.http import JsonResponse 
 from django.db.models.functions import ExtractMonth
 from django.db.models import Count 
 from datetime import datetime
+from django.contrib import messages
 
 
 class HomePageView(ListView):
@@ -173,3 +175,42 @@ def map_station(request):
     }
     
     return render(request, 'map_station.html', context)
+
+def fire_incident_list(request):
+    incidents = FireIncident.objects.all()
+    return render(request, 'templates/fire_incident_list.html', {'incidents': incidents})
+
+def fire_incident_create(request):
+    if request.method == "POST":
+        form = FireIncidentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Fire incident created successfully!')
+            return redirect('fire_incident_list')
+        else:
+            messages.error(request, 'There was an error creating the fire incident.')
+    else:
+        form = FireIncidentForm()
+    return render(request, 'templates/fire_incident_form.html', {'form': form})
+
+def fire_incident_update(request, pk):
+    incident = get_object_or_404(FireIncident, pk=pk)
+    if request.method == "POST":
+        form = FireIncidentForm(request.POST, instance=incident)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Fire incident updated successfully!')
+            return redirect('fire_incident_list')
+        else:
+            messages.error(request, 'There was an error updating the fire incident.')
+    else:
+        form = FireIncidentForm(instance=incident)
+    return render(request, 'templates/fire_incident_form.html', {'form': form})
+
+def fire_incident_delete(request, pk):
+    incident = get_object_or_404(FireIncident, pk=pk)
+    if request.method == "POST":
+        incident.delete()
+        messages.success(request, 'Fire incident deleted successfully!')
+        return redirect('fire_incident_list')
+    return render(request, 'templates/fire_incident_delete.html', {'incident': incident})
