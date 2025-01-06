@@ -1,3 +1,5 @@
+from django.utils.timezone import now
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -11,13 +13,14 @@ class BaseModel(models.Model):
 
 class Locations(BaseModel):
     name = models.CharField(max_length=150)
-    latitude = models.DecimalField(
-        max_digits=22, decimal_places=16, null=True, blank=True)
-    longitude = models.DecimalField(
-        max_digits=22, decimal_places=16, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
     address = models.CharField(max_length=150)
     city = models.CharField(max_length=150)  # can be in separate table
     country = models.CharField(max_length=150)  # can be in separate table
+
+    def __str__(self) :
+        return self.name
 
 
 class Incident(BaseModel):
@@ -25,23 +28,29 @@ class Incident(BaseModel):
         ('Minor Fire', 'Minor Fire'),
         ('Moderate Fire', 'Moderate Fire'),
         ('Major Fire', 'Major Fire'),
-    )
+        )
     location = models.ForeignKey(Locations, on_delete=models.CASCADE)
     date_time = models.DateTimeField(blank=True, null=True)
     severity_level = models.CharField(max_length=45, choices=SEVERITY_CHOICES)
     description = models.CharField(max_length=250)
 
+    def clean(self):
+        if self.date_time and self.date_time > now() :
+            raise ValidationError("Incident date and time cannot be in the future!")
+
+    def __str__(self) :
+        return f"{self.location}"
 
 class FireStation(BaseModel):
     name = models.CharField(max_length=150)
-    latitude = models.DecimalField(
-        max_digits=22, decimal_places=16, null=True, blank=True)
-    longitude = models.DecimalField(
-        max_digits=22, decimal_places=16, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
     address = models.CharField(max_length=150)
     city = models.CharField(max_length=150)  # can be in separate table
     country = models.CharField(max_length=150)  # can be in separate table
 
+    def __str__(self) :
+        return f"{self.name}"
 
 class Firefighters(BaseModel):
     XP_CHOICES = (
@@ -54,41 +63,32 @@ class Firefighters(BaseModel):
         ('Battalion Chief', 'Battalion Chief'),)
     name = models.CharField(max_length=150)
     rank = models.CharField(max_length=150)
-    experience_level = models.CharField(max_length=150)
-    station = models.CharField(
+    experience_level = models.CharField(
         max_length=45, null=True, blank=True, choices=XP_CHOICES)
+    station = models.CharField(max_length=150)
 
-
+    def __str__(self) :
+        return self.name
+    
 class FireTruck(BaseModel):
     truck_number = models.CharField(max_length=150)
     model = models.CharField(max_length=150)
     capacity = models.CharField(max_length=150)  # water
     station = models.ForeignKey(FireStation, on_delete=models.CASCADE)
 
-
+    def __str__(self) :
+        return f"{self.model}"
+    
 class WeatherConditions(BaseModel):
     incident = models.ForeignKey(Incident, on_delete=models.CASCADE)
     temperature = models.DecimalField(max_digits=10, decimal_places=2)
     humidity = models.DecimalField(max_digits=10, decimal_places=2)
     wind_speed = models.DecimalField(max_digits=10, decimal_places=2)
     weather_description = models.CharField(max_length=150)
-
-class FireIncident(models.Model):
-    SEVERITY_CHOICES = [
-        ('Low', 'Low'),
-        ('Medium', 'Medium'),
-        ('High', 'High'),
-        ('Critical', 'Critical'),
-    ]
-
-    location = models.CharField(max_length=200)
-    date = models.DateTimeField()
-    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES)
-    description = models.TextField()
-
-    temperature = models.FloatField(help_text="Temperature in C")
-    humidity = models.FloatField(help_text="Humidity as %")
-    wind_speed = models.FloatField(help_text="Wind speed in km/h")
-
-    def __str__(self):
-        return f"Fire at {self.location} - {self.severity}"
+    
+    def clean(self):
+        if self.temperature < 0.0 or self.humidity < 0.0 or self.wind_speed < 0.0:
+            raise ValidationError("Values must be a positive number.")
+    
+    def __str__(self) :
+        return self.incident.location.name

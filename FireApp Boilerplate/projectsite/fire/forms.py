@@ -1,35 +1,37 @@
 from django import forms
-from .models import FireIncident
-from django.core.exceptions import ValidationError
-from datetime import datetime
+from django.forms import ModelForm
+from .models import Incident, Locations, Firefighters, FireStation, FireTruck, WeatherConditions
 
-class FireIncidentForm(forms.ModelForm):
+class FireStationForm(ModelForm):
     class Meta:
-        model = FireIncident
-        fields = ['location', 'date', 'severity', 'description']
+        model = FireStation
+        fields = "__all__"
 
-def date(self):
-        date = self.data.get('date')
+class FireFighterForm(ModelForm):
+    class Meta:
+        model = Firefighters
+        fields = "__all__"
 
-        if date > datetime.now():
-            raise ValidationError("Wrong Date.")
+class FireTruckForm(ModelForm):
+    class Meta:
+        model = FireTruck
+        fields = "__all__"
 
-        return date
+class LocationForm(ModelForm):
+    class Meta:
+        model = Locations
+        fields = "__all__"
 
-def temperature(self):
-        temperature = self.data.get('temperature')
-        if temperature < 0:
-            raise ValidationError("Invalid Input")
-        return temperature
+class WeatherConditionForm(ModelForm):
+    class Meta:
+        model = WeatherConditions
+        fields = "__all__"
+        
 
-def humidity(self):
-    humidity = self.data.get('humidity')
-    if humidity < 0:
-        raise ValidationError("Invalid Input")
-    return humidity
-
-def wind_speed(self):
-    wind_speed = self.data.get('wind_speed')
-    if wind_speed < 0:
-        raise ValidationError("Invalid Input")
-    return wind_speed
+class IncidentForm(ModelForm):
+    class Meta:
+        model = Incident
+        fields = "__all__"
+        widgets = {
+            'date_time': forms.DateTimeInput(attrs={'type':'datetime-local'})
+        }

@@ -141,16 +141,35 @@
                 <div class="collapse" id="base">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="components/avatars.html">
-                        <span class="sub-item">Avatars</span>
+                      <a href="{% url 'fireStation-list' %}">
+                        <span class="sub-item">Fire Stations</span>
                       </a>
                     </li>
                     <li>
-                      <a href="components/buttons.html">
-                        <span class="sub-item">Buttons</span>
+                      <a href="{% url 'fireFighter-list' %}">
+                        <span class="sub-item">Fire Fighters</span>
                       </a>
                     </li>
-                    
+                    <li>
+                      <a href="{% url 'fireTruck-list' %}">
+                        <span class="sub-item">Fire Trucks</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'location-list' %}">
+                        <span class="sub-item">Locations</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'weatherCondition-list' %}">
+                        <span class="sub-item">Weather Conditions</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'incident-list' %}">
+                        <span class="sub-item">Incidents</span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </li>
@@ -171,7 +190,7 @@
                       </a>
                     </li>
                     <li>
-                      <a href="{% url 'fire_incident_list' %}">
+                      <a href="{% url 'map-incident' %}">
                         <span class="sub-item">Fire Incidents</span>
                       </a>
                     </li>
@@ -187,7 +206,7 @@
                 <div class="collapse" id="charts">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="#">
+                      <a href="{% url 'dashboard-chart' %}">
                         <span class="sub-item">Chart Js</span>
                       </a>
                     </li>
@@ -259,13 +278,6 @@
     <script src="{% static 'js/plugin/jqvmap/maps/jquery.vmap.world.js' %}"></script>
     <script src="{% static 'js/plugin/sweetalert/sweetalert.min.js' %}"></script>
     <script src="{% static 'js/atlantis.min.js' %}"></script>
-    <script>
-      {% if messages %}
-          {% for message in messages %}
-              toastr.{{ message.tags }}("{{ message }}");
-          {% endfor %}
-      {% endif %}
-    </script>
 
     {% block chart %}
 
